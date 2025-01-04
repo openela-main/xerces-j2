@@ -2,7 +2,7 @@
 
 Name:          xerces-j2
 Version:       2.12.1
-Release:       6%{?dist}
+Release:       8%{?dist}
 Summary:       Java XML parser
 # Most of the source is ASL 2.0
 # W3C licensed files:
@@ -38,7 +38,6 @@ BuildRequires: ant
 BuildRequires: apache-parent
 BuildRequires: xml-commons-apis >= 1.4.01
 BuildRequires: xml-commons-resolver >= 1.2
-BuildRequires: java-devel
 
 Requires:      xml-commons-apis >= 1.4.01
 Requires:      xml-commons-resolver >= 1.2
@@ -105,9 +104,9 @@ Requires:       %{name} = %{version}-%{release}
 
 %prep
 %setup -n xerces-%{cvs_version}
-%patch0 -p0
-%patch1 -p0
-%patch2 -p0
+%patch -P 0 -p0
+%patch -P 1 -p0
+%patch -P 2 -p0
 
 # Copy the custom ant task into place
 mkdir -p tools/org/apache/xerces/util
@@ -130,10 +129,10 @@ sed -i -e "s|additionalparam='|additionalparam='-Xdoclint:none |" build.xml
 pushd tools
 
 # Build custom ant tasks
-javac -classpath $(build-classpath ant) org/apache/xerces/util/XJavac.java
-jar cf bin/xjavac.jar org/apache/xerces/util/XJavac.class
+%{_jvmdir}/java-11-openjdk/bin/javac -classpath $(build-classpath ant) org/apache/xerces/util/XJavac.java
+%{_jvmdir}/java-11-openjdk/bin/jar cf bin/xjavac.jar org/apache/xerces/util/XJavac.class
 
-jar cmf /dev/null serializer.jar
+%{_jvmdir}/java-11-openjdk/bin/jar cmf /dev/null serializer.jar
 ln -sf $(build-classpath xml-commons-apis) xml-apis.jar
 ln -sf $(build-classpath xml-commons-resolver) resolver.jar
 popd
@@ -192,6 +191,12 @@ ln -sf %{name}.jar %{_javadir}/jaxp_parser_impl.jar
 %{_datadir}/%{name}
 
 %changelog
+* Thu Nov 21 2024 Marián Konček <mkoncek@redhat.com> - 2.12.1-8
+- Fix patch usage
+
+* Tue Nov 19 2024 Marián Konček <mkoncek@redhat.com> - 2.12.1-7
+- Rebuild with regenerated Requires on Java
+
 * Tue Aug 10 2021 Mohan Boddu <mboddu@redhat.com> - 2.12.1-6
 - Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
   Related: rhbz#1991688
