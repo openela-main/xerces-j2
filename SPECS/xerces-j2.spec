@@ -2,7 +2,7 @@
 
 Name:          xerces-j2
 Version:       2.12.1
-Release:       8%{?dist}
+Release:       11%{?dist}
 Summary:       Java XML parser
 # Most of the source is ASL 2.0
 # W3C licensed files:
@@ -10,6 +10,8 @@ Summary:       Java XML parser
 # src/org/w3c/dom/html/HTMLDOMImplementation.java
 License:       ASL 2.0 and W3C
 URL:           http://xerces.apache.org/xerces2-j/
+BuildArch:     noarch
+ExclusiveArch: aarch64 ppc64le s390x x86_64 noarch
 
 %global cvs_version %(tr . _ <<< %{version})
 
@@ -30,8 +32,6 @@ Patch1:        %{name}-manifest.patch
 
 # Patch build.xml to patch modules as needed during javadoc generation
 Patch2:        %{name}-modulefix.patch
-
-BuildArch:     noarch
 
 BuildRequires: javapackages-local
 BuildRequires: ant
@@ -170,7 +170,8 @@ install -p -m 644 %{SOURCE11} %{buildroot}%{_mandir}/man1
 install -p -m 644 %{SOURCE12} %{buildroot}%{_mandir}/man1
 
 # demo
-install -pD -T build/xercesSamples.jar %{buildroot}%{_datadir}/%{name}/%{name}-samples.jar
+install -d -m 755 %{buildroot}%{_datadir}/%{name}/
+install -p -m 644 build/xercesSamples.jar %{buildroot}%{_datadir}/%{name}/%{name}-samples.jar
 cp -pr data %{buildroot}%{_datadir}/%{name}
 
 %post
@@ -191,6 +192,15 @@ ln -sf %{name}.jar %{_javadir}/jaxp_parser_impl.jar
 %{_datadir}/%{name}
 
 %changelog
+* Wed Dec 04 2024 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.12.1-11
+- Fix incorrect permissions of xerces-j2-samples.jar
+
+* Sat Nov 23 2024 Marián Konček <mkoncek@redhat.com> - 2.12.1-10
+- Add noarch to ExclusiveArch
+
+* Fri Nov 22 2024 Marián Konček <mkoncek@redhat.com> - 2.12.1-9
+- Disable building on i686
+
 * Thu Nov 21 2024 Marián Konček <mkoncek@redhat.com> - 2.12.1-8
 - Fix patch usage
 
